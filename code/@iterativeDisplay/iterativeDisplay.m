@@ -224,6 +224,7 @@ classdef iterativeDisplay < handle
             % Cf. Matlab plot data
             if any(obj.status==obj.instructionStatus.plot) || obj.mode==2
                 % Plot & stores handles
+                varargin=fixEmptyVarargin(varargin{:});
                 handle=plot(varargin{:});
                 if any(size(handle)~=[1 1])
                     error('You can only plot one line at a time');
