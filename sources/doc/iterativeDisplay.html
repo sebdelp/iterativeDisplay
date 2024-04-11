@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,IE=9,chrome=1"><meta name="generator" content="MATLAB 2023a"><title>Iterative Display</title><style type="text/css">.rtcContent { padding: 30px; } .S0 { margin: 3px 10px 5px 4px; padding: 0px; line-height: 28.8px; min-height: 0px; white-space: pre-wrap; color: rgb(192, 76, 11); font-family: Helvetica, Arial, sans-serif; font-style: normal; font-size: 24px; font-weight: 400; text-align: left;  }
+.S1 { margin-bottom: 20px; padding-bottom: 4px;  }
+.S2 { margin: 0px; padding: 10px 0px 10px 5px; line-height: 21px; min-height: 0px; white-space: pre-wrap; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 700; text-align: start;  }
+.S3 { margin: -1px 0px 0px; padding: 10px 0px 10px 7px; line-height: 21px; min-height: 0px; white-space: pre-wrap; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: start;  }
+.S4 { margin: 2px 10px 9px 4px; padding: 0px; line-height: 21px; min-height: 0px; white-space: pre-wrap; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif; font-style: normal; font-size: 14px; font-weight: 400; text-align: left;  }
+.S5 { margin: 20px 10px 5px 4px; padding: 0px; line-height: 20px; min-height: 0px; white-space: pre-wrap; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif; font-style: normal; font-size: 20px; font-weight: 700; text-align: left;  }
+.S6 { margin: 15px 10px 5px 4px; padding: 0px; line-height: 18px; min-height: 0px; white-space: pre-wrap; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif; font-style: normal; font-size: 17px; font-weight: 700; text-align: left;  }
+.S7 { border-left: 0px none rgb(33, 33, 33); border-right: 0px none rgb(33, 33, 33); border-top: 0px none rgb(33, 33, 33); border-bottom: 0px none rgb(33, 33, 33); border-radius: 0px; padding: 0px; line-height: 15.6px; min-height: 16px; white-space: pre; color: rgb(33, 33, 33); font-family: Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 12px;  }
+.S8 { margin: 10px 10px 5px 4px; padding: 0px; line-height: 18px; min-height: 0px; white-space: pre-wrap; color: rgb(33, 33, 33); font-family: Helvetica, Arial, sans-serif; font-style: normal; font-size: 15px; font-weight: 700; text-align: left;  }
+.S9 { margin: 10px 0px 20px; padding-left: 0px; font-family: Helvetica, Arial, sans-serif; font-size: 14px;  }
+.S10 { margin-left: 56px; line-height: 21px; min-height: 0px; text-align: left; white-space: pre-wrap;  }</style></head><body><div class = rtcContent><h1  class = 'S0' id = 'T_7364D99F' ><span>Iterative Display</span></h1><div  class = 'S1'><div  class = 'S2'><span style=' font-weight: bold;'>Table of Contents</span></div><div  class = 'S3'><a href = "#H_E38CBDAD"><span>Description
+</span></a><a href = "#H_10D58203"><span>Creation
+</span></a><span>    </span><a href = "#H_00564AA1"><span>Syntax
+</span></a><span>    </span><a href = "#H_EDD5097C"><span>Object Functions
+</span></a><span>        </span><a href = "#H_3E67092D"><span>newIteration
+</span></a><span>        </span><a href = "#H_C05B99A4"><span>finalIteration
+</span></a><span>        </span><a href = "#H_15055671"><span>desactivateOptimizedDisplay
+</span></a><span>        </span><a href = "#H_BDC54786"><span>disableOptimization
+</span></a><span>        </span><a href = "#H_00F3B87D"><span>isOptimized
+</span></a><span>        </span><a href = "#H_D2CDAC07"><span>isFinalIteration
+</span></a><span>        </span><a href = "#H_C6C2A0A0"><span>setIter
+</span></a><span>        </span><a href = "#H_D41C623D"><span>setOnce
+</span></a><span>        </span><a href = "#H_EA8D8416"><span>skip
+</span></a><span>    </span><a href = "#H_41E4EDC3"><span>Graphic functions</span></a></div></div><div  class = 'S4'><span></span></div><h2  class = 'S5' id = 'H_E38CBDAD' ><span>Description</span></h2><div  class = 'S4'><span>Use an </span><span style=' font-family: monospace;'>iterativeDisplay</span><span> object to quickly display graphics wihtin loops. Basically, when calling a graphic display method, this object stores handle to the created graphics object and then update their properties in the sucessive calls (instead of re-creating a new object). As a result, the display is significantly faster.</span></div><h2  class = 'S5' id = 'H_10D58203' ><span>Creation</span></h2><h3  class = 'S6' id = 'H_00564AA1' ><span>Syntax</span></h3><div  class = 'S4'><span>To create an iterative display, you simply need to use:</span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span >id = iterativeDisplay();</span></span></div></div><h3  class = 'S6' id = 'H_C03180D9' ><span></span></h3><h3  class = 'S6' id = 'H_EDD5097C' ><span>Object Functions</span></h3><div  class = 'S4'><span>The </span><span style=' font-family: monospace;'>iterativeDisplay</span><span> object provides the following methods whose name are similar to Matlab graphic function. During the first iteration, which is used to setup the figures, the behavior of such object function is similar to their Matlab instruction counterpart. However, during the other iterations, the </span><span style=' font-family: monospace;'>iterativeDisplay</span><span> only some properties of the created graphic objects.</span></div><div  class = 'S4'><span></span></div><h4  class = 'S8' id = 'H_3E67092D' ><span>newIteration</span></h4><div  class = 'S4'><span>This function has to be called at the begining of every iteration execpt the final one (see </span><a href = "#H_C05B99A4"><span>finalIteration</span></a><span>)</span></div><div  class = 'S4'><span style=' text-decoration: underline;'>Example:</span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span >id.newIteration();</span></span></div></div><h4  class = 'S8' id = 'H_C417631D' ><span></span></h4><h4  class = 'S8' id = 'H_C05B99A4' ><span>finalIteration</span></h4><div  class = 'S4'><span>This function must be called at the begining of the last iteration. </span></div><div  class = 'S4'><span style=' text-decoration: underline;'>Example:</span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span >id.finalIteration();</span></span></div></div><div  class = 'S4'><span></span></div><h4  class = 'S8' id = 'H_15055671' ><span>desactivateOptimizedDisplay</span></h4><div  class = 'S4'><span>This function desactivate all the optimization of the </span><span style=' font-family: monospace;'>iterativeDisplay</span><span>. As a result, the behavior of all the function revert back to Matlab's original behavior.</span></div><div  class = 'S4'><span style=' text-decoration: underline;'>Exemple:</span><span> </span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span >id.desactivateOptimizedDisplay();</span></span></div></div><div  class = 'S4'><span></span></div><h4  class = 'S8' id = 'H_BDC54786' ><span>disableOptimization</span></h4><div  class = 'S4'><span>This function desactivate the optimization for a specific instruction or a set of instructions. You can pass a string with a single name function name (plot, etc) or a cell array with multiple function name.</span></div><div  class = 'S4'><span>Single instruction optimization desactivation:</span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span >id.disableOptimization(</span><span style="color: rgb(167, 9, 245);">'plot'</span><span >);</span></span></div></div><div  class = 'S4'><span>Multiples instructions optimization desactivation:</span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span >id.disableOptimization({</span><span style="color: rgb(167, 9, 245);">'plot'</span><span >,</span><span style="color: rgb(167, 9, 245);">'title'</span><span >});</span></span></div></div><div  class = 'S4'><span></span></div><div  class = 'S4'><span> See </span><a href = "example/html/optimization_desactivation.html"><span>Optimization desactivation example</span></a></div><div  class = 'S4'><span></span></div><div  class = 'S4'><span></span></div><h4  class = 'S8' id = 'H_00F3B87D' ><span>isOptimized</span></h4><div  class = 'S4'><span>This function return </span><span style=' font-family: monospace;'>true</span><span> if the optimization are enables, </span><span style=' font-family: monospace;'>false</span><span> otherwise.</span></div><div  class = 'S4'><span style=' text-decoration: underline;'>Example:</span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span >disp(id.isFinalIteration)</span></span></div></div><h4  class = 'S8' id = 'H_7E90CAC9' ><span></span></h4><h4  class = 'S8' id = 'H_D2CDAC07' ><span>isFinalIteration</span></h4><div  class = 'S4'><span>This function return </span><span style=' font-family: monospace;'>true</span><span> if the iteration is the last one.</span></div><div  class = 'S4'><span style=' text-decoration: underline;'>Example:</span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span >disp(id.isFinalIteration)</span></span></div></div><h4  class = 'S8' id = 'H_F7293D16' ><span></span></h4><h4  class = 'S8' id = 'H_C6C2A0A0' ><span>setIter</span></h4><div  class = 'S4'><span>This function set the properies only during the initialization phase (1st iteration) and final iteration.</span></div><div  class = 'S4'><span style=' text-decoration: underline;'>Example:</span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span >id.setIter(h,</span><span style="color: rgb(167, 9, 245);">'size'</span><span >,10);</span></span></div></div><div  class = 'S4' id = 'H_357BC3C4' ><span>See the </span><a href = "example/html/setting_properties.html"><span>Setting Properties example</span></a></div><h4  class = 'S8' id = 'H_251B7763' ><span></span></h4><h4  class = 'S8' id = 'H_D41C623D' ><span>setOnce</span></h4><div  class = 'S4'><span>This function set the properies during every iteration.</span></div><div  class = 'S4'><span style=' text-decoration: underline;'>Example:</span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span >id.setOnce(h,</span><span style="color: rgb(167, 9, 245);">'size'</span><span >,10);</span></span></div></div><div  class = 'S4' id = 'H_357BC3C4' ><span>See the </span><a href = "example/html/setting_properties.html"><span>Setting Properties example</span></a></div><h4  class = 'S8' id = 'H_E2E6FB02' ><span></span></h4><h4  class = 'S8' id = 'H_EA8D8416' ><span>skip</span></h4><div  class = 'S4'><span>This function is a place holder that prevent calling a function. It allows skipping the display of some values, for instance to plot a signal only when certains conditions occurs (e.g. every 10 iterations).</span></div><div  class = 'S4'><span>You can skip a call to a single function by calling </span><span style=' font-family: monospace;'>skip</span><span> with a single string containing the function name to skip.</span></div><div  class = 'S4'><span>You may skip several function scall by using a cell array as parameters.</span></div><div  class = 'S4'><span>You may skip two sucessive call to the same function (</span><span style=' font-family: monospace;'>plot</span><span> for instance) by using a cell array with duplicate function names.</span></div><div  class = 'S4'><span style=' text-decoration: underline;'>Example:</span></div><div class = 'preformatted-matlab' style = 'margin: 10px 3px 10px 55px; padding: 10px 10px 10px 5px; '><div  class = 'S7'><span style="white-space: pre"><span >id.skip(</span><span style="color: rgb(167, 9, 245);">'plot'</span><span >);</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >id.skip({</span><span style="color: rgb(167, 9, 245);">'plot'</span><span >,</span><span style="color: rgb(167, 9, 245);">'semilogx'</span><span >});</span></span></div><div  class = 'S7'><span style="white-space: pre"><span >id.skip({</span><span style="color: rgb(167, 9, 245);">'plot'</span><span >,</span><span style="color: rgb(167, 9, 245);">'plot'</span><span >,</span><span style="color: rgb(167, 9, 245);">'semilogy'</span><span >});</span></span></div></div><div  class = 'S4'><span style=' text-decoration: underline;'></span></div><div  class = 'S4'><span>See  </span><a href = "example/html/skipping_function_call.html"><span>Skipping function call examples</span></a><span>.</span></div><div  class = 'S4'><span></span></div><h3  class = 'S6' id = 'H_41E4EDC3' ><span>Graphic functions</span></h3><div  class = 'S4'><span>The following functions are only executed during the initialization phase (1st iteration). Nothing happens in the other iterations.</span></div><div  class = 'S4'><span style=' font-family: monospace;'>figure</span><span>  </span><span style=' font-family: monospace;'>subplot</span><span> </span><span style=' font-family: monospace;'>tiledlayout</span><span> </span><span style=' font-family: monospace;'>nexttile</span><span> </span><span style=' font-family: monospace;'>xlabel</span><span> </span><span style=' font-family: monospace;'>ylabel</span><span> </span><span style=' font-family: monospace;'>zlabel</span><span> yyaxis  </span><span style=' font-family: monospace;'>hold</span><span> </span><span style=' font-family: monospace;'>grid</span><span> </span><span style=' font-family: monospace;'>box</span></div><div  class = 'S4'><span></span></div><div  class = 'S4'><span>The following instruction is only called during the final iteration: </span><span style=' font-family: monospace;'>legend</span></div><div  class = 'S4'><span style=' font-family: monospace;'></span></div><div  class = 'S4'><span>For the following functions, the Matlab code is executed during the initialization phase (1st iteration) and </span><span style=' font-weight: bold;'>only the properties indicated in parenthesis are updated during the next iterations</span><span>.</span></div><ul  class = 'S9'><li  class = 'S10'><span style=' font-family: monospace;'>title (String)</span></li><li  class = 'S10'><span style=' font-family: monospace;'>plot</span><span>    (</span><span style=' font-family: monospace;'>XData</span><span>,</span><span style=' font-family: monospace;'>YData</span><span>)</span></li><li  class = 'S10'><span style=' font-family: monospace;'>plot3</span><span> (</span><span style=' font-family: monospace;'>XData</span><span>,</span><span style=' font-family: monospace;'>YData</span><span>,</span><span style=' font-family: monospace;'>ZData</span><span>)</span></li><li  class = 'S10'><span style=' font-family: monospace;'>semilogx</span><span> (</span><span style=' font-family: monospace;'>XData</span><span>,</span><span style=' font-family: monospace;'>YData</span><span>)</span></li><li  class = 'S10'><span style=' font-family: monospace;'>semilogy</span><span> (</span><span style=' font-family: monospace;'>XData</span><span>,</span><span style=' font-family: monospace;'>YData</span><span>)</span></li><li  class = 'S10'><span style=' font-family: monospace;'>loglog</span><span> (</span><span style=' font-family: monospace;'>XData</span><span>,</span><span style=' font-family: monospace;'>YData</span><span>)</span></li><li  class = 'S10'><span style=' font-family: monospace;'>surf </span><span>(</span><span style=' font-family: monospace;'>XData</span><span>,</span><span style=' font-family: monospace;'>YData,ZData</span><span>)</span></li><li  class = 'S10'><span style=' font-family: monospace;'>mesh </span><span>(</span><span style=' font-family: monospace;'>XData</span><span>,</span><span style=' font-family: monospace;'>YData,ZData</span><span>)</span></li><li  class = 'S10'><span style=' font-family: monospace;'>sgtitle</span><span> (</span><span style=' font-family: monospace;'>String</span><span>)</span></li></ul><div  class = 'S4'><span>The following functions are executed at every iteration : </span><span style=' font-family: monospace;'>xlim</span><span>, </span><span style=' font-family: monospace;'>ylim</span><span>, </span><span style=' font-family: monospace;'>zlim</span><span>.</span></div><div  class = 'S4'><span style=' font-family: monospace;'>See </span><a href = "./GettingStarted.html"><span style=' font-family: monospace;'>The getting started guide</span></a><span style=' font-family: monospace;'> for some examples.</span></div>
+<br>
+<!-- 
+##### SOURCE BEGIN #####
+%% Iterative Display
+%% 
+% 
+%% Description
+% Use an |iterativeDisplay| object to quickly display graphics wihtin loops. 
+% Basically, when calling a graphic display method, this object stores handle 
+% to the created graphics object and then update their properties in the sucessive 
+% calls (instead of re-creating a new object). As a result, the display is significantly 
+% faster.
+%% Creation
+% Syntax
+% To create an iterative display, you simply need to use:
+%%
+% 
+%   id = iterativeDisplay();
+%
+% 
+% Object Functions
+% The |iterativeDisplay| object provides the following methods whose name are 
+% similar to Matlab graphic function. During the first iteration, which is used 
+% to setup the figures, the behavior of such object function is similar to their 
+% Matlab instruction counterpart. However, during the other iterations, the |iterativeDisplay| 
+% only some properties of the created graphic objects.
+% 
+% 
+% newIteration
+% This function has to be called at the begining of every iteration execpt the 
+% final one (see finalIteration)
+% 
+% Example:
+%%
+% 
+%   id.newIteration();
+%
+% 
+% finalIteration
+% This function must be called at the begining of the last iteration. 
+% 
+% Example:
+%%
+% 
+%   id.finalIteration();
+%
+%% 
+% 
+% desactivateOptimizedDisplay
+% This function desactivate all the optimization of the |iterativeDisplay|. 
+% As a result, the behavior of all the function revert back to Matlab's original 
+% behavior.
+% 
+% Exemple: 
+%%
+% 
+%   id.desactivateOptimizedDisplay();
+%
+%% 
+% 
+% disableOptimization
+% This function desactivate the optimization for a specific instruction or a 
+% set of instructions. You can pass a string with a single name function name 
+% (plot, etc) or a cell array with multiple function name.
+% 
+% Single instruction optimization desactivation:
+%%
+% 
+%   id.disableOptimization('plot');
+%
+%% 
+% Multiples instructions optimization desactivation:
+%%
+% 
+%   id.disableOptimization({'plot','title'});
+%
+%% 
+% 
+% 
+% See <example/html/optimization_desactivation.html Optimization desactivation 
+% example>
+% 
+% 
+% 
+% 
+% isOptimized
+% This function return |true| if the optimization are enables, |false| otherwise.
+% 
+% Example:
+%%
+% 
+%   disp(id.isFinalIteration)
+%
+% 
+% isFinalIteration
+% This function return |true| if the iteration is the last one.
+% 
+% Example:
+%%
+% 
+%   disp(id.isFinalIteration)
+%
+% 
+% setIter
+% This function set the properies only during the initialization phase (1st 
+% iteration) and final iteration.
+% 
+% Example:
+%%
+% 
+%   id.setIter(h,'size',10);
+%
+%% 
+% See the <example/html/setting_properties.html Setting Properties example>
+% 
+% setOnce
+% This function set the properies during every iteration.
+% 
+% Example:
+%%
+% 
+%   id.setOnce(h,'size',10);
+%
+%% 
+% See the <example/html/setting_properties.html Setting Properties example>
+% 
+% skip
+% This function is a place holder that prevent calling a function. It allows 
+% skipping the display of some values, for instance to plot a signal only when 
+% certains conditions occurs (e.g. every 10 iterations).
+% 
+% You can skip a call to a single function by calling |skip| with a single string 
+% containing the function name to skip.
+% 
+% You may skip several function scall by using a cell array as parameters.
+% 
+% You may skip two sucessive call to the same function (|plot| for instance) 
+% by using a cell array with duplicate function names.
+% 
+% Example:
+%%
+% 
+%   id.skip('plot');
+%   id.skip({'plot','semilogx'});
+%   id.skip({'plot','plot','semilogy'});
+%
+%% 
+% 
+% 
+% See  <example/html/skipping_function_call.html Skipping function call examples>.
+% 
+% 
+% Graphic functions
+% The following functions are only executed during the initialization phase 
+% (1st iteration). Nothing happens in the other iterations.
+% 
+% |figure|  |subplot| |tiledlayout| |nexttile| |xlabel| |ylabel| |zlabel| yyaxis  
+% |hold| |grid| |box|
+% 
+% 
+% 
+% The following instruction is only called during the final iteration: |legend|
+% 
+% 
+% 
+% For the following functions, the Matlab code is executed during the initialization 
+% phase (1st iteration) and *only the properties indicated in parenthesis are 
+% updated during the next iterations*.
+%% 
+% * |title (String)|
+% * |plot|    (|XData|,|YData|)
+% * |plot3| (|XData|,|YData|,|ZData|)
+% * |semilogx| (|XData|,|YData|)
+% * |semilogy| (|XData|,|YData|)
+% * |loglog| (|XData|,|YData|)
+% * |surf| (|XData|,|YData,ZData|)
+% * |mesh| (|XData|,|YData,ZData|)
+% * |sgtitle| (|String|)
+%% 
+% The following functions are executed at every iteration : |xlim|, |ylim|, 
+% |zlim|.
+% 
+% |See| <./GettingStarted.mlx |The getting started guide|> |for some examples.|
+##### SOURCE END #####
+-->
+</div></body></html>
