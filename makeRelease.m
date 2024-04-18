@@ -18,23 +18,7 @@ clc
 % Generate a copy of the toolbox that only use p-coded file
 CurrentDirectory=pwd;
 
-
-
-% Uninstall current toolbox
-list=matlab.addons.toolbox.installedToolboxes;
-j=-1;
-for i=1:length(list)
-    if contains(list(i).Name,'Iterative')
-        j=i;
-    end
-end
-if j>0
-    % Uninstall toolbox
-    fprintf('Uninstalling : %s\n',list(j).Name)
-    matlab.addons.toolbox.uninstallToolbox(list(j));
-else
-    warning('Toolbox not installed : nothing to uninstall')
-end
+toolboxName='Iterative Display';
 
 
 % Source Folders
@@ -44,47 +28,51 @@ ExpleSrcFolder=fullfile(DocSrcFolder,'examplesSources');
 UserExpleSrcFolder=fullfile(DocSrcFolder,'userExamples');
 
 % Dst Folder
-toolboxDstFolder=fullfile(CurrentDirectory,'sources');
+toolboxDstFolder=fullfile(CurrentDirectory,'toolboxReleaseFiles');
+codeDstFolder=fullfile(toolboxDstFolder,'code');
 DocDstFolder=fullfile(toolboxDstFolder,'doc');
 ExpleDstFolder=fullfile(DocDstFolder,'example');
 HtmlExpleDstFolder=fullfile(ExpleDstFolder,'html');
 
-toolboxPath={toolboxDstFolder,DocDstFolder,ExpleDstFolder};
-for i=1:length(toolboxPath),rmpath(toolboxPath{i});end
+toolboxPath={toolboxDstFolder,codeDstFolder,DocDstFolder,ExpleDstFolder};
 
+% =======================================
+% Uninstall toolbox 
+% =======================================
+uninstallToolbox(toolboxName);
 
-% Remove current doc
+%======================================================
+% Remove toolbox from path so we can delete folders
+%======================================================
+removeFromPath(toolboxPath);
+
+%======================================================
+% Create empty folders
+%======================================================
+
+% Remove current toolbox build folder
 if isfolder(toolboxDstFolder)
     rmdir(toolboxDstFolder,'s');
 end
+
 % Rebuild folder structure
-mkdir(toolboxDstFolder);
-if ~isfolder(DocDstFolder)
-mkdir(DocDstFolder);
-end
-if ~isfolder(ExpleDstFolder)
-mkdir(ExpleDstFolder);
-end
-if ~isfolder(HtmlExpleDstFolder)
-    mkdir(HtmlExpleDstFolder);
-end
+createFolders({toolboxDstFolder,codeDstFolder,DocDstFolder,HtmlExpleDstFolder});
 
-for i=1:length(toolboxPath)
-    fprintf('Adding path %s\n',toolboxPath{i})
-    addpath(toolboxPath{i});
-end
 
+%======================================================
+% Add path
+%======================================================
+addToPath(toolboxPath);
 
 
 %======================================================
 % Sources
 %======================================================
-copyfile(codeSrcFolder,toolboxDstFolder);
+copyfile(codeSrcFolder,codeDstFolder);
 
 %======================================================
 % doc 
 %======================================================
-
 fprintf('Building doc html\n')
 fileList=dir(fullfile(DocSrcFolder, '*.mlx'));
 for noFile=1:length(fileList)
@@ -152,8 +140,7 @@ cd(CurrentDirectory)
 % ==================================================
 % Package toolbox
 % ==================================================
-toolboxVersion='0.1.0';
-toolboxName='Iterative Display';
+toolboxVersion='0.1.1';
 toolboxDescription='This toolbox allows accelerating the graphic plotting within loops';
 toolboxSummary='This toolbox allows accelerating the graphic plotting within loops. The basic principle is that the object store handles to graphic object and then update their properties instead of recreating them. This is done with a minor modification of the code.';
 toolboxAuthor='S. Delprat';
@@ -165,7 +152,7 @@ toolboxPlatforms.Glnxa64=true;
 toolboxPlatforms.Maci64=true;
 toolboxPlatforms.MatlabOnline=true;
 toolboxPlatforms.Win64=true;
-toolboxOutputFile='Iterative Display.mltbx';
+toolboxOutputFile='IterativeDisplay.mltbx';
 
 toolboxUID='iterativeDisplayToolbox-123456-123456';
 opts = matlab.addons.toolbox.ToolboxOptions(toolboxDstFolder,toolboxUID,...
@@ -192,8 +179,11 @@ matlab.addons.toolbox.packageToolbox(opts);
 % ==================================================
 installedToolbox = matlab.addons.toolbox.installToolbox(toolboxOutputFile);
 
-% Clean path
-cleanPath
+%======================================================
+% Remove from path
+%======================================================
+removeFromPath(toolboxPath);
+
 
 % Open doc
 doc
@@ -214,3 +204,61 @@ for i=1:length(C)
     end
 end
 end
+
+
+function uninstallToolbox(partialName)
+list=matlab.addons.toolbox.installedToolboxes;
+j=-1;
+for i=1:length(list)
+    if contains(list(i).Name,partialName)
+        j=i;
+    end
+end
+if j>0
+    % Uninstall toolbox
+    fprintf('Uninstalling : %s\n',list(j).Name)
+    matlab.addons.toolbox.uninstallToolbox(list(j));
+else
+    fprintf('Toolbox not installed : nothing to uninstall\n')
+end
+end
+
+
+
+function removeFromPath(folders)
+for i=1:length(folders)
+    folder=folders{i};
+    % Check if the folder is already in the MATLAB path
+    inPath = any(strcmpi(folder, strsplit(path, pathsep)));
+
+    if inPath
+        % Remove the folder from the MATLAB path
+        rmpath(folder);
+        disp(['Removed "', folder, '" from MATLAB path.']);
+    end
+end
+end
+
+function addToPath(folders)
+for i=1:length(folders)
+    folder=folders{i};
+
+    % Add the folder to the MATLAB path
+    addpath(folder);
+    disp(['Added "', folder, '" to MATLAB path.']);
+
+end
+end
+
+
+
+function createFolders(folders)
+for i=1:length(folders)
+    folder=folders{i};
+    if ~isfolder(folder)
+        fprintf('Creating folder : %s\n',folder)
+        mkdir(folder);
+    end
+end
+end
+

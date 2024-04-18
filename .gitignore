@@ -1,0 +1,12 @@
+# file to be excluded from git
+*.asv
+*.slxc
+*slprj*
+*.mkv
+*.mat
+*.zip
+
+.git
+test
+images.pptx
+

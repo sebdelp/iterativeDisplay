@@ -8,7 +8,6 @@ uninstallToolbox('Iterative')
 toggleFolderInPath(fullfile(pwd,'code'));
 
 
-
 function toggleFolderInPath(folder)
     % Check if the folder is already in the MATLAB path
     inPath = any(strcmpi(folder, strsplit(path, pathsep)));
