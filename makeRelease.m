@@ -140,7 +140,7 @@ cd(CurrentDirectory)
 % ==================================================
 % Package toolbox
 % ==================================================
-toolboxVersion='0.1.1';
+toolboxVersion='0.1.2';
 toolboxDescription='This toolbox allows accelerating the graphic plotting within loops';
 toolboxSummary='This toolbox allows accelerating the graphic plotting within loops. The basic principle is that the object store handles to graphic object and then update their properties instead of recreating them. This is done with a minor modification of the code.';
 toolboxAuthor='S. Delprat';
