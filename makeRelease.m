@@ -21,6 +21,7 @@ CurrentDirectory=pwd;
 toolboxName='Iterative Display';
 
 
+
 % Source Folders
 codeSrcFolder=fullfile(CurrentDirectory,'code');
 DocSrcFolder=fullfile(CurrentDirectory,'docSources');
@@ -154,7 +155,16 @@ toolboxPlatforms.MatlabOnline=true;
 toolboxPlatforms.Win64=true;
 toolboxOutputFile='IterativeDisplay.mltbx';
 
-toolboxUID='iterativeDisplayToolbox-123456-123456';
+
+if ~isfile([toolboxName '_uuid.mat'])
+    uuid=matlab.lang.internal.uuid;
+    % Save our precious file
+    save([toolboxName '_uuid.mat'],"uuid");
+else
+    load([toolboxName '_uuid.mat']);
+end
+
+toolboxUID=uuid;
 opts = matlab.addons.toolbox.ToolboxOptions(toolboxDstFolder,toolboxUID,...
     'ToolboxName',toolboxName,...
     'ToolboxVersion',toolboxVersion,...
