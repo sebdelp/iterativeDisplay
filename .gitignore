@@ -5,6 +5,7 @@
 *.mkv
 *.mat
 *.zip
+*_uuid.mat
 
 .git
 test
