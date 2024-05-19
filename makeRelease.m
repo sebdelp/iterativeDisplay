@@ -21,7 +21,6 @@ CurrentDirectory=pwd;
 toolboxName='Iterative Display';
 
 
-
 % Source Folders
 codeSrcFolder=fullfile(CurrentDirectory,'code');
 DocSrcFolder=fullfile(CurrentDirectory,'docSources');
@@ -141,7 +140,7 @@ cd(CurrentDirectory)
 % ==================================================
 % Package toolbox
 % ==================================================
-toolboxVersion='0.1.3';
+toolboxVersion='0.1.4';
 toolboxSummary='This toolbox allows accelerating the graphic plotting within loops or iterative code';
 
 toolboxDescription='This toolbox allows accelerating the graphic plotting within loops. The basic principle is that the object store handles to graphic object and then update their properties instead of recreating them. This is done with a minor modification of the code.';

@@ -4,7 +4,7 @@ classdef iterativeDisplay < handle
     %
     % Author: S. Delprat, UPHF, LAMIH UMR CNRS 8201
 
-    
+
     properties(SetAccess=private, GetAccess=private)
         % Property to store the counter call
         counter
@@ -12,7 +12,11 @@ classdef iterativeDisplay < handle
         handles
         % Property to store the selected axe of that function
         axesList
-        
+
+        % Property to select where the index of first data to plot
+        % Allows to skip the parent handle plot(target,datax,datay)
+        firstDataIdx
+
         % Property to store the selected figure of that function
         figures
 
@@ -47,7 +51,7 @@ classdef iterativeDisplay < handle
             % Object that can only be executed during final
             list={'legend'};
             for i=1:length(list)
-                obj.instructionStatus.(list{i})=[3];
+                obj.instructionStatus.(list{i})=3;
                 obj.counter.(list{i})=1;
                 obj.handles.(list{i})={};
                 obj.figures.(list{i})={};
@@ -62,8 +66,9 @@ classdef iterativeDisplay < handle
                 obj.handles.(list{i})={};
                 obj.figures.(list{i})={};
                 obj.axesList.(list{i})={};
+                obj.firstDataIdx.(list{i})={};
             end
-            
+
             % No optimization
             list={'xlim','ylim','zlim'};
             for i=1:length(list)
@@ -73,44 +78,44 @@ classdef iterativeDisplay < handle
                 obj.figures.(list{i})={};
                 obj.axesList.(list{i})={};
             end
-            
-            
+
+
         end
-        
+
         function disp(obj)
             switch(obj.status)
                 case {1,-1}
-                    status='init';
+                    statusStr='init';
                 case 2
-                    status='iter';
-                case 3 
-                    status='final';
+                    statusStr='iter';
+                case 3
+                    statusStr='final';
             end
             if obj.mode==1
-                mode='optimization on';
+                modeStr='optimization on';
             else
-                mode='optimization off';
+                modeStr='optimization off';
             end
-            fprintf('  iterative display object with status="%s" and %s.\n',status,mode);
+            fprintf('  iterative display object with status="%s" and %s.\n',statusStr,modeStr);
         end
 
         function skip(obj,fcns)
-          % Skip the functions call
-          if ~iscell(fcns)
-              fcns={fcns};
-          end
-          if obj.noIter<2
-              error('skip can only be used after the 1st iteration')
-          end
+            % Skip the functions call
+            if ~iscell(fcns)
+                fcns={fcns};
+            end
+            if obj.noIter<2
+                error('skip can only be used after the 1st iteration')
+            end
 
-          for i=1:length(fcns)
-              fcn=fcns{i};
-              if isfield(obj.counter,fcn)
-                 obj.counter.(fcn)=obj.counter.(fcn)+1; 
-              else
-                error('%s is not a valid function name')
-              end
-          end
+            for i=1:length(fcns)
+                fcn=fcns{i};
+                if isfield(obj.counter,fcn)
+                    obj.counter.(fcn)=obj.counter.(fcn)+1;
+                else
+                    error('%s is not a valid function name')
+                end
+            end
         end
 
         function disableOptimization(obj,fcns)
@@ -119,12 +124,12 @@ classdef iterativeDisplay < handle
             % iteration.
             % The disableOptimization can only be called during the
             % initialization phase
-            if obj.status>1 
+            if obj.status>1
                 % This function is only executed during the init phase
                 return
             end
-            
-            if ~iscell(fcns) 
+
+            if ~iscell(fcns)
                 fcns={fcns};
             end
 
@@ -144,7 +149,7 @@ classdef iterativeDisplay < handle
         function desactivateOptimizedDisplay(obj)
             obj.mode=2;
         end
-        
+
         function newIteration(obj)
             if obj.status==3
                 error('No more iteration are allowed after the final iteration');
@@ -155,7 +160,7 @@ classdef iterativeDisplay < handle
             for i=1:length(fields)
                 obj.counter.(fields{i})=1;
             end
-            
+
             if obj.noIter==0
                 obj.status=1; % Initialization
             else
@@ -167,7 +172,7 @@ classdef iterativeDisplay < handle
             obj.newIteration();
             obj.status=3;
         end
-       
+
         function val=isOptimized(obj)
             val= obj.mode==1;
         end
@@ -183,12 +188,10 @@ classdef iterativeDisplay < handle
             end
             if nargout>0
                 varargout={obj.handles.figure{obj.counter.figure}};
-            else
-                varargout={};
             end
             obj.counter.figure=obj.counter.figure+1;
         end
-        
+
         function varargout=axes(obj,varargin)
             if any(obj.status==obj.instructionStatus.axes) || obj.mode==2
                 if nargout>0
@@ -201,12 +204,12 @@ classdef iterativeDisplay < handle
                 end
             end
             if nargout>0
-                varargout=obj.handles.axes{obj.counter.figure};
+                varargout={obj.handles.axes{obj.counter.figure}};
             end
             obj.counter.figure=obj.counter.axes+1;
-            
+
         end
-        
+
         function varargout=tiledlayout(obj,varargin)
             % Create a tiledlayout object (or return its handle during optimizaiton)
             if any(obj.status==obj.instructionStatus.tiledlayout) || obj.mode==2
@@ -214,8 +217,6 @@ classdef iterativeDisplay < handle
             end
             if nargout>0
                 varargout={obj.handles.tiledlayout{obj.counter.tiledlayout}};
-            else
-                varargout={};
             end
             obj.counter.tiledlayout=obj.counter.tiledlayout+1;
         end
@@ -244,9 +245,10 @@ classdef iterativeDisplay < handle
             end
         end
         function setIter(obj,handle,property,val)
-            % Set object properties
+            % Set object properties at every iteration
             set(handle,property,val);
         end
+
         function varargout=plot(obj,varargin)
             % This function plot the data. It is restricted to a single plot
             % at a time
@@ -254,19 +256,22 @@ classdef iterativeDisplay < handle
             if any(obj.status==obj.instructionStatus.plot) || obj.mode==2
                 % Plot & stores handles
                 varargin=fixEmptyVarargin2D(varargin{:});
+                obj.firstDataIdx.('plot')=findFirstData(varargin);
+
                 handle=plot(varargin{:});
                 if any(size(handle)~=[1 1])
                     error('You can only plot one line at a time');
                 end
                 obj.handles.plot{obj.counter.plot}=handle;
             else
+                iStart=obj.firstDataIdx.('plot'); % Maybe first argument is the axe handle...or not
                 if countNumericArguments(varargin)==1
                     % Only update y
-                    obj.handles.plot{obj.counter.plot}.YData=varargin{1};
+                    obj.handles.plot{obj.counter.plot}.YData=varargin{iStart};
                 else
                     % Update x & y data
-                    obj.handles.plot{obj.counter.plot}.XData=varargin{1};
-                    obj.handles.plot{obj.counter.plot}.YData=varargin{2};
+                    obj.handles.plot{obj.counter.plot}.XData=varargin{iStart};
+                    obj.handles.plot{obj.counter.plot}.YData=varargin{iStart+1};
                 end
             end
             if nargout>0
@@ -277,34 +282,36 @@ classdef iterativeDisplay < handle
         end % Plot
 
         function varargout=loglog(obj,varargin)
-            % This function plot the data. It is restricted to a single plot
+            % This function loglog the data. It is restricted to a single loglog
             % at a time
-            % Cf. Matlab plot data
+            % Cf. Matlab loglog data
             if any(obj.status==obj.instructionStatus.loglog) || obj.mode==2
-                % Plot & stores handles
+                % loglog & stores handles
                 varargin=fixEmptyVarargin2D(varargin{:});
+                obj.firstDataIdx.('loglog')=findFirstData(varargin);
+
                 handle=loglog(varargin{:});
                 if any(size(handle)~=[1 1])
-                    error('You can only plot  one loglog line at a time')
+                    error('You can only plot one loglog line at a time');
                 end
                 obj.handles.loglog{obj.counter.loglog}=handle;
             else
+                iStart=obj.firstDataIdx.('loglog'); % Maybe first argument is the axe handle...or not
                 if countNumericArguments(varargin)==1
                     % Only update y
-                    obj.handles.loglog{obj.counter.loglog}.YData=varargin{1};
+                    obj.handles.loglog{obj.counter.loglog}.YData=varargin{iStart};
                 else
-                     % Update x & y data
-                    obj.handles.loglog{obj.counter.loglog}.XData=varargin{1};
-                    obj.handles.loglog{obj.counter.loglog}.YData=varargin{2};
-                
+                    % Update x & y data
+                    obj.handles.loglog{obj.counter.loglog}.XData=varargin{iStart};
+                    obj.handles.loglog{obj.counter.loglog}.YData=varargin{iStart+1};
                 end
             end
             if nargout>0
                 varargout={obj.handles.loglog{obj.counter.loglog}};
             end
-            % This plot has been processed, plot next
+            % This loglog has been processed, loglog next
             obj.counter.loglog=obj.counter.loglog+1;
-        end
+        end % loglog
 
         function varargout=plot3(obj,varargin)
             % This function plot3 the data. It is restricted to a single plot3
@@ -313,6 +320,8 @@ classdef iterativeDisplay < handle
             if any(obj.status==obj.instructionStatus.plot3) || obj.mode==2
                 % plot3 & stores handles
                 varargin=fixEmptyVarargin2D(varargin{:});
+                obj.firstDataIdx.('plot3')=findFirstData(varargin);
+
                 handle=plot3(varargin{:});
                 if any(size(handle)~=[1 1])
                     error('You can only plot3 one line at a time');
@@ -320,9 +329,11 @@ classdef iterativeDisplay < handle
                 obj.handles.plot3{obj.counter.plot3}=handle;
             else
                 % Update x , y & z data
-                obj.handles.plot3{obj.counter.plot3}.XData=varargin{1};
-                obj.handles.plot3{obj.counter.plot3}.YData=varargin{2};
-                obj.handles.plot3{obj.counter.plot3}.ZData=varargin{3};
+                iStart=obj.firstDataIdx.('plot3'); % Maybe first argument is the axe handle...or not
+
+                obj.handles.plot3{obj.counter.plot3}.XData=varargin{iStart};
+                obj.handles.plot3{obj.counter.plot3}.YData=varargin{iStart+1};
+                obj.handles.plot3{obj.counter.plot3}.ZData=varargin{iStart+2};
             end
             if nargout>0
                 varargout={obj.handles.plot3{obj.counter.plot3}};
@@ -342,7 +353,7 @@ classdef iterativeDisplay < handle
             end
             obj.counter.nexttile=obj.counter.nexttile+1;
         end
-      
+
         function grid(obj,varargin)
             if any(obj.status==obj.instructionStatus.grid) || obj.mode==2
                 grid(varargin{:});
@@ -396,7 +407,7 @@ classdef iterativeDisplay < handle
             end
             obj.counter.zlabel=obj.counter.zlabel+1;
         end
-             
+
 
         function yyaxis(obj,varargin)
             if any(obj.status==obj.instructionStatus.yyaxis) || obj.mode==2
@@ -404,8 +415,8 @@ classdef iterativeDisplay < handle
             end
         end
         function varargout=title(obj,varargin)
-            if obj.status==1 
-               % Save current axis for later usage
+            if obj.status==1
+                % Save current axis for later usage
                 obj.axesList.title{obj.counter.title}=gca;
             end
 
@@ -421,10 +432,10 @@ classdef iterativeDisplay < handle
             end
             obj.counter.title=obj.counter.title+1;
         end
-        
+
         function varargout=sgtitle(obj,varargin)
-            if obj.status==1 
-               % Save current axis for later usage
+            if obj.status==1
+                % Save current axis for later usage
                 obj.figures.sgtitle{obj.counter.sgtitle}=gcf;
             end
 
@@ -442,8 +453,8 @@ classdef iterativeDisplay < handle
         end
 
         function varargout=legend(obj,varargin)
-            if obj.status==1 
-               % Save current axis for later usage
+            if obj.status==1
+                % Save current axis for later usage
                 obj.axesList.legend{obj.counter.legend}=gca;
             end
 
@@ -470,28 +481,29 @@ classdef iterativeDisplay < handle
             if any(obj.status==obj.instructionStatus.surf) || obj.mode==2
                 varargin=fixEmptyVarargin3D(varargin{:});
                 obj.handles.surf{obj.counter.surf}=surf(varargin{:});
-
+                obj.firstDataIdx.('surf')=findFirstData(varargin);
             else
+                iStart=obj.firstDataIdx.('surf'); % Maybe first argument is the axe handle...or not
                 switch countNumericArguments(varargin)
                     case 1
                         % surf(z)
-                        obj.handles.surf{obj.counter.surf}.ZData=varargin{1};
+                        obj.handles.surf{obj.counter.surf}.ZData=varargin{iStart};
                     case 2
                         % surf(Z,c)
-                        obj.handles.surf{obj.counter.surf}.ZData=varargin{1};
-                        obj.handles.surf{obj.counter.surf}.CData=varargin{2};
+                        obj.handles.surf{obj.counter.surf}.ZData=varargin{iStart};
+                        obj.handles.surf{obj.counter.surf}.CData=varargin{iStart+1};
                     case 3
                         % surf(X,Y,Z)
                         % We fix C=Z to ensure correct CData  size
-                        obj.handles.surf{obj.counter.surf}.XData=varargin{1};
-                        obj.handles.surf{obj.counter.surf}.YData=varargin{2};
-                        obj.handles.surf{obj.counter.surf}.ZData=varargin{3};
-                        obj.handles.surf{obj.counter.surf}.CData=varargin{3};
+                        obj.handles.surf{obj.counter.surf}.XData=varargin{iStart};
+                        obj.handles.surf{obj.counter.surf}.YData=varargin{iStart+1};
+                        obj.handles.surf{obj.counter.surf}.ZData=varargin{iStart+2};
+                        obj.handles.surf{obj.counter.surf}.CData=varargin{iStart+3};
                     case 4
-                        obj.handles.surf{obj.counter.surf}.XData=varargin{1};
-                        obj.handles.surf{obj.counter.surf}.YData=varargin{2};
-                        obj.handles.surf{obj.counter.surf}.ZData=varargin{3};
-                        obj.handles.surf{obj.counter.surf}.CData=varargin{4};
+                        obj.handles.surf{obj.counter.surf}.XData=varargin{iStart};
+                        obj.handles.surf{obj.counter.surf}.YData=varargin{iStart+1};
+                        obj.handles.surf{obj.counter.surf}.ZData=varargin{iStart+2};
+                        obj.handles.surf{obj.counter.surf}.CData=varargin{iStart+3};
                     otherwise
                         error('too many input arguments');
                 end
@@ -501,35 +513,35 @@ classdef iterativeDisplay < handle
             end
             obj.counter.surf=obj.counter.surf+1;
         end %surf
-
         function varargout=mesh(obj,varargin)
             if any(obj.status==obj.instructionStatus.mesh) || obj.mode==2
                 varargin=fixEmptyVarargin3D(varargin{:});
                 obj.handles.mesh{obj.counter.mesh}=mesh(varargin{:});
-
+                obj.firstDataIdx.('mesh')=findFirstData(varargin);
             else
+                iStart=obj.firstDataIdx.('mesh'); % Maybe first argument is the axe handle...or not
                 switch countNumericArguments(varargin)
                     case 1
-                        % Mesh(z)
-                        obj.handles.mesh{obj.counter.mesh}.ZData=varargin{1};
+                        % mesh(z)
+                        obj.handles.mesh{obj.counter.mesh}.ZData=varargin{iStart};
                     case 2
-                        % Mesh(Z,c)
-                        obj.handles.mesh{obj.counter.mesh}.ZData=varargin{1};
-                        obj.handles.mesh{obj.counter.mesh}.CData=varargin{2};
+                        % mesh(Z,c)
+                        obj.handles.mesh{obj.counter.mesh}.ZData=varargin{iStart};
+                        obj.handles.mesh{obj.counter.mesh}.CData=varargin{iStart+1};
                     case 3
-                        % Mesh(X,Y,Z)
+                        % mesh(X,Y,Z)
                         % We fix C=Z to ensure correct CData  size
-                        obj.handles.mesh{obj.counter.mesh}.XData=varargin{1};
-                        obj.handles.mesh{obj.counter.mesh}.YData=varargin{2};
-                        obj.handles.mesh{obj.counter.mesh}.ZData=varargin{3};
-                        obj.handles.mesh{obj.counter.mesh}.CData=varargin{3};
+                        obj.handles.mesh{obj.counter.mesh}.XData=varargin{iStart};
+                        obj.handles.mesh{obj.counter.mesh}.YData=varargin{iStart+1};
+                        obj.handles.mesh{obj.counter.mesh}.ZData=varargin{iStart+2};
+                        obj.handles.mesh{obj.counter.mesh}.CData=varargin{iStart+3};
                     case 4
-                        obj.handles.mesh{obj.counter.mesh}.XData=varargin{1};
-                        obj.handles.mesh{obj.counter.mesh}.YData=varargin{2};
-                        obj.handles.mesh{obj.counter.mesh}.ZData=varargin{3};
-                        obj.handles.mesh{obj.counter.mesh}.CData=varargin{4};
+                        obj.handles.mesh{obj.counter.mesh}.XData=varargin{iStart};
+                        obj.handles.mesh{obj.counter.mesh}.YData=varargin{iStart+1};
+                        obj.handles.mesh{obj.counter.mesh}.ZData=varargin{iStart+2};
+                        obj.handles.mesh{obj.counter.mesh}.CData=varargin{iStart+3};
                     otherwise
-                        error('Too many input arguments');
+                        error('too many input arguments');
                 end
             end
             if nargout>0
@@ -538,151 +550,154 @@ classdef iterativeDisplay < handle
             obj.counter.mesh=obj.counter.mesh+1;
         end %mesh
 
-         function varargout=semilogx(obj,varargin)
-            % This function plot the data. It is restricted to a single plot
+        function varargout=semilogx(obj,varargin)
+            % This function semilogx the data. It is restricted to a single semilogx
             % at a time
-            % Cf. Matlab plot data
+            % Cf. Matlab semilogx data
             if any(obj.status==obj.instructionStatus.semilogx) || obj.mode==2
-                % Plot & stores handles
+                % semilogx & stores handles
                 varargin=fixEmptyVarargin2D(varargin{:});
+                obj.firstDataIdx.('semilogx')=findFirstData(varargin);
 
                 handle=semilogx(varargin{:});
                 if any(size(handle)~=[1 1])
-                    error('You can only plot  one semilogx line at a time')
+                    error('You can only plot one semilogx line at a time');
                 end
                 obj.handles.semilogx{obj.counter.semilogx}=handle;
             else
+                iStart=obj.firstDataIdx.('semilogx'); % Maybe first argument is the axe handle...or not
                 if countNumericArguments(varargin)==1
                     % Only update y
-                    obj.handles.semilogx{obj.counter.semilogx}.YData=varargin{1};
+                    obj.handles.semilogx{obj.counter.semilogx}.YData=varargin{iStart};
                 else
                     % Update x & y data
-                    obj.handles.semilogx{obj.counter.semilogx}.XData=varargin{1};
-                    obj.handles.semilogx{obj.counter.semilogx}.YData=varargin{2};
+                    obj.handles.semilogx{obj.counter.semilogx}.XData=varargin{iStart};
+                    obj.handles.semilogx{obj.counter.semilogx}.YData=varargin{iStart+1};
                 end
             end
             if nargout>0
                 varargout={obj.handles.semilogx{obj.counter.semilogx}};
             end
-
-            % This plot has been processed, plot next
+            % This semilogx has been processed, semilogx next
             obj.counter.semilogx=obj.counter.semilogx+1;
-         end
-         function varargout=semilogy(obj,varargin)
-            % This function plot the data. It is restricted to a single plot
+        end % semilogx
+        function varargout=semilogy(obj,varargin)
+            % This function semilogy the data. It is restricted to a single semilogy
             % at a time
             % Cf. Matlab semilogy data
             if any(obj.status==obj.instructionStatus.semilogy) || obj.mode==2
-                % Plot & stores handles
+                % semilogy & stores handles
                 varargin=fixEmptyVarargin2D(varargin{:});
+                obj.firstDataIdx.('semilogy')=findFirstData(varargin);
+
                 handle=semilogy(varargin{:});
                 if any(size(handle)~=[1 1])
-                    error('You can only plot  one semilogy line at a time')
+                    error('You can only plot one semilogy line at a time');
                 end
                 obj.handles.semilogy{obj.counter.semilogy}=handle;
             else
+                iStart=obj.firstDataIdx.('semilogy'); % Maybe first argument is the axe handle...or not
                 if countNumericArguments(varargin)==1
-                      % Only update y
-                    obj.handles.semilogy{obj.counter.semilogy}.YData=varargin{1};
+                    % Only update y
+                    obj.handles.semilogy{obj.counter.semilogy}.YData=varargin{iStart};
                 else
-                   % Update x & y data
-                    obj.handles.semilogy{obj.counter.semilogy}.XData=varargin{1};
-                    obj.handles.semilogy{obj.counter.semilogy}.YData=varargin{2};
+                    % Update x & y data
+                    obj.handles.semilogy{obj.counter.semilogy}.XData=varargin{iStart};
+                    obj.handles.semilogy{obj.counter.semilogy}.YData=varargin{iStart+1};
                 end
             end
             if nargout>0
                 varargout={obj.handles.semilogy{obj.counter.semilogy}};
             end
-            % This plot has been processed, plot next
+            % This semilogy has been processed, semilogy next
             obj.counter.semilogy=obj.counter.semilogy+1;
-         end
-         
-         function varargout=xlim(obj,varargin)
+        end % semilogy
+        function varargout=xlim(obj,varargin)
 
-             if obj.status==1
-                 % Save current axis for later usage
-                 obj.axesList.xlim{obj.counter.xlim}=gca;
-             end
-             if nargin==1 || ischar(varargin{1}) || isstring(varargin{1})
-                 % User is querying the limits
-                 lim=xlim(obj.axesList.xlim{obj.counter.xlim},varargin{:});
-             else
-                 if any(obj.status==obj.instructionStatus.xlim) || obj.mode==2
-                     % User sets the limits
-                     if any(obj.status==obj.instructionStatus.xlim) || obj.mode==2
-                         % set xlim & stores handles
-                         xlim(obj.axesList.xlim{obj.counter.xlim},varargin{:});
-                         lim=[];
-                     end
-                 end
-             end
-             if nargout>0
-                 varargout={lim};
-             end
-             obj.counter.xlim=obj.counter.xlim+1;
-         end % Xlim
+            if obj.status==1
+                % Save current axis for later usage
+                obj.axesList.xlim{obj.counter.xlim}=gca;
+            end
+            if nargin==1 || ischar(varargin{1}) || isstring(varargin{1})
+                % User is querying the limits
+                lim=xlim(obj.axesList.xlim{obj.counter.xlim},varargin{:});
+            else
+                if any(obj.status==obj.instructionStatus.xlim) || obj.mode==2
+                    % User sets the limits
+                    if any(obj.status==obj.instructionStatus.xlim) || obj.mode==2
+                        % set xlim & stores handles
+                        xlim(obj.axesList.xlim{obj.counter.xlim},varargin{:});
+                        lim=[];
+                    end
+                end
+            end
+            if nargout>0
+                varargout={lim};
+            end
+            obj.counter.xlim=obj.counter.xlim+1;
+        end % Xlim
 
-         function varargout=ylim(obj,varargin)
+        function varargout=ylim(obj,varargin)
 
-             if obj.status==1
-                 % Save current axis for later usage
-                 obj.axesList.ylim{obj.counter.ylim}=gca;
-             end
+            if obj.status==1
+                % Save current axis for later usage
+                obj.axesList.ylim{obj.counter.ylim}=gca;
+            end
 
-             if nargin==1 || ischar(varargin{1}) || isstring(varargin{1})
-                 % User is querying the limits
-                 lim=ylim(obj.axesList.ylim{obj.counter.ylim},varargin{:});
-             else
-                 % User sets the limits
-                 if any(obj.status==obj.instructionStatus.ylim) || obj.mode==2
+            if nargin==1 || ischar(varargin{1}) || isstring(varargin{1})
+                % User is querying the limits
+                lim=ylim(obj.axesList.ylim{obj.counter.ylim},varargin{:});
+            else
+                % User sets the limits
+                if any(obj.status==obj.instructionStatus.ylim) || obj.mode==2
 
-                     if any(obj.status==obj.instructionStatus.ylim) || obj.mode==2
-                         % set ylim & stores handles
-                         ylim(obj.axesList.ylim{obj.counter.ylim},varargin{:});
-                         lim=[];
-                     end
-                 end
-             end
-             if nargout>0
-                 varargout={lim};
-             end
-             obj.counter.ylim=obj.counter.ylim+1;
-         end % ylim
+                    if any(obj.status==obj.instructionStatus.ylim) || obj.mode==2
+                        % set ylim & stores handles
+                        ylim(obj.axesList.ylim{obj.counter.ylim},varargin{:});
+                        lim=[];
+                    end
+                end
+            end
+            if nargout>0
+                varargout={lim};
+            end
+            obj.counter.ylim=obj.counter.ylim+1;
+        end % ylim
 
-         function varargout=zlim(obj,varargin)
+        function varargout=zlim(obj,varargin)
 
-             if obj.status==1
-                 % Save current axis for later usage
-                 obj.axesList.zlim{obj.counter.zlim}=gca;
-             end
+            if obj.status==1
+                % Save current axis for later usage
+                obj.axesList.zlim{obj.counter.zlim}=gca;
+            end
 
-             if nargin==1 || ischar(varargin{1}) || isstring(varargin{1})
-                 % User is querying the limits
-                 lim=zlim(obj.axesList.zlim{obj.counter.zlim},varargin{:});
-             else
-                 if any(obj.status==obj.instructionStatus.zlim) || obj.mode==2
+            if nargin==1 || ischar(varargin{1}) || isstring(varargin{1})
+                % User is querying the limits
+                lim=zlim(obj.axesList.zlim{obj.counter.zlim},varargin{:});
+            else
+                if any(obj.status==obj.instructionStatus.zlim) || obj.mode==2
 
-                     % User sets the limits
-                     if any(obj.status==obj.instructionStatus.zlim) || obj.mode==2
-                         % set zlim & stores handles
-                         zlim(obj.axesList.zlim{obj.counter.zlim},varargin{:});
-                         lim=[];
-                     end
-                 end
-             end
-             if nargout>0
-                 varargout={lim};
-             end
-             obj.counter.zlim=obj.counter.zlim+1;
-         end % zlim
-        
-         function box(obj,varargin)
-             if any(obj.status==obj.instructionStatus.box) || obj.mode==2
-                 % User is querying the limits
-               box(varargin{:});
-             end
-             obj.counter.zlim=obj.counter.zlim+1;
-         end % nox
+                    % User sets the limits
+                    if any(obj.status==obj.instructionStatus.zlim) || obj.mode==2
+                        % set zlim & stores handles
+                        zlim(obj.axesList.zlim{obj.counter.zlim},varargin{:});
+                        lim=[];
+                    end
+                end
+            end
+            if nargout>0
+                varargout={lim};
+            end
+            obj.counter.zlim=obj.counter.zlim+1;
+        end % zlim
+
+        function box(obj,varargin)
+            if any(obj.status==obj.instructionStatus.box) || obj.mode==2
+                % User is querying the limits
+                box(varargin{:});
+            end
+            obj.counter.zlim=obj.counter.zlim+1;
+        end % nox
     end
 
 end
