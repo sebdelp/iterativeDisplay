@@ -59,7 +59,7 @@ classdef iterativeDisplay < handle
             end
 
 
-            list={'plot','plot3','semilogx','semilogy','loglog','surf','mesh'};
+            list={'plot','plot3','semilogx','semilogy','loglog','surf','mesh','imshow'};
             for i=1:length(list)
                 obj.instructionStatus.(list{i})=[-1 1];
                 obj.counter.(list{i})=1;
@@ -342,6 +342,24 @@ classdef iterativeDisplay < handle
             obj.counter.plot3=obj.counter.plot3+1;
         end % plot3
 
+ function varargout=imshow(obj,varargin)
+            % This function plot an image . 
+            % Restricted to CDATA update using the first argument
+            if any(obj.status==obj.instructionStatus.imshow) || obj.mode==2
+                % plot3 & stores handles
+                handle=imshow(varargin{:});
+               
+                obj.handles.imshow{obj.counter.imshow}=handle;
+            else
+                % Update CData
+                obj.handles.imshow{obj.counter.imshow}.CData=varargin{1};
+            end
+            if nargout>0
+                varargout={obj.handles.imshow{obj.counter.imshow}};
+            end
+            % This plot3 has been processed, plot3 next
+            obj.counter.imshow=obj.counter.imshow+1;
+        end % imshow
 
         function varargout=nexttile(obj,varargin)
             % call nexttile
