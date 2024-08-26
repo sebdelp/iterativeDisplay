@@ -248,7 +248,10 @@ classdef iterativeDisplay < handle
             % Set object properties at every iteration
             set(handle,property,val);
         end
-
+        function set(obj,handle,property,val)
+            % Set object properties at every iteration
+            error('You cannot use the "set" method. Instead use "setIter" to set the property at every iteration, or "setOnce" to update the property only on the first and last iterations')
+        end
         function varargout=plot(obj,varargin)
             % This function plot the data. It is restricted to a single plot
             % at a time
