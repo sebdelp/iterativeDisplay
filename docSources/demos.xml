@@ -29,6 +29,12 @@
          <type>other</type>
          <source>skipping_function_call</source>
          <file>example/html/skipping_function_call.html</file>
+    </demoitem>
+    <demoitem>
+         <label>imshow</label>
+         <type>other</type>
+         <source>imshow_demo</source>
+         <file>example/html/imshow_demo.html</file>
       </demoitem>
    </demosection>
 </demos>
