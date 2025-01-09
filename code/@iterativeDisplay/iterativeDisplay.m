@@ -100,6 +100,10 @@ classdef iterativeDisplay < handle
         end
 
         function skip(obj,fcns)
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
+
             % Skip the functions call
             if ~iscell(fcns)
                 fcns={fcns};
@@ -182,6 +186,7 @@ classdef iterativeDisplay < handle
         end
 
         function varargout=figure(obj,varargin)
+              
             % Create a new figure (or return its handle during optimization)
             if any(obj.status==obj.instructionStatus.figure) || obj.mode==2
                 obj.handles.figure{obj.counter.figure}=figure(varargin{:});
@@ -193,6 +198,9 @@ classdef iterativeDisplay < handle
         end
 
         function varargout=axes(obj,varargin)
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             if any(obj.status==obj.instructionStatus.axes) || obj.mode==2
                 if nargout>0
                     % A handle is expected to be created
@@ -211,6 +219,9 @@ classdef iterativeDisplay < handle
         end
 
         function varargout=tiledlayout(obj,varargin)
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             % Create a tiledlayout object (or return its handle during optimizaiton)
             if any(obj.status==obj.instructionStatus.tiledlayout) || obj.mode==2
                 obj.handles.tiledlayout{obj.counter.tiledlayout}=tiledlayout(varargin{:});
@@ -222,6 +233,9 @@ classdef iterativeDisplay < handle
         end
 
         function varargout=subplot(obj,varargin)
+             if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+             end
             % Create a subplot object (or return its handle during optimizaiton)
             if any(obj.status==obj.instructionStatus.subplot) ||obj.mode==2
                 obj.handles.subplot{obj.counter.subplot}=subplot(varargin{:});
@@ -240,12 +254,18 @@ classdef iterativeDisplay < handle
                 val
             end
             % Set object properties
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             if any(obj.status==[1 3]) || obj.mode==2
                 set(handle,property,val);
             end
         end
         function setIter(obj,handle,property,val)
             % Set object properties at every iteration
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             set(handle,property,val);
         end
         function set(obj,handle,property,val)
@@ -256,6 +276,9 @@ classdef iterativeDisplay < handle
             % This function plot the data. It is restricted to a single plot
             % at a time
             % Cf. Matlab plot data
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             if any(obj.status==obj.instructionStatus.plot) || obj.mode==2
                 % Plot & stores handles
                 varargin=fixEmptyVarargin2D(varargin{:});
@@ -288,6 +311,9 @@ classdef iterativeDisplay < handle
             % This function loglog the data. It is restricted to a single loglog
             % at a time
             % Cf. Matlab loglog data
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             if any(obj.status==obj.instructionStatus.loglog) || obj.mode==2
                 % loglog & stores handles
                 varargin=fixEmptyVarargin2D(varargin{:});
@@ -320,6 +346,9 @@ classdef iterativeDisplay < handle
             % This function plot3 the data. It is restricted to a single plot3
             % at a time
             % Cf. Matlab plot3 data
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             if any(obj.status==obj.instructionStatus.plot3) || obj.mode==2
                 % plot3 & stores handles
                 varargin=fixEmptyVarargin2D(varargin{:});
@@ -345,9 +374,12 @@ classdef iterativeDisplay < handle
             obj.counter.plot3=obj.counter.plot3+1;
         end % plot3
 
- function varargout=imshow(obj,varargin)
+        function varargout=imshow(obj,varargin)
             % This function plot an image . 
             % Restricted to CDATA update using the first argument
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             if any(obj.status==obj.instructionStatus.imshow) || obj.mode==2
                 % plot3 & stores handles
                 handle=imshow(varargin{:});
@@ -366,6 +398,9 @@ classdef iterativeDisplay < handle
 
         function varargout=nexttile(obj,varargin)
             % call nexttile
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             if any(obj.status==obj.instructionStatus.plot) || obj.mode==2
                 obj.handles.nexttile{obj.counter.nexttile}=nexttile(varargin{:});
             end
@@ -376,17 +411,25 @@ classdef iterativeDisplay < handle
         end
 
         function grid(obj,varargin)
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             if any(obj.status==obj.instructionStatus.grid) || obj.mode==2
                 grid(varargin{:});
             end
         end
         function hold(obj,varargin)
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             if any(obj.status==obj.instructionStatus.hold) || obj.mode==2
                 hold(varargin{:});
             end
         end
         function varargout=xlabel(obj,varargin)
-            if obj.status==1
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            elseif obj.status==1
                 % Save current axis for later usage
                 obj.axesList.xlabel{obj.counter.xlabel}=gca;
             end
@@ -401,7 +444,9 @@ classdef iterativeDisplay < handle
         end
 
         function varargout=ylabel(obj,varargin)
-            if obj.status==1
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            elseif obj.status==1
                 % Save current axis for later usage
                 obj.axesList.ylabel{obj.counter.ylabel}=gca;
             end
@@ -415,7 +460,9 @@ classdef iterativeDisplay < handle
             obj.counter.ylabel=obj.counter.ylabel+1;
         end
         function varargout=zlabel(obj,varargin)
-            if obj.status==1
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            elseif obj.status==1
                 % Save current axis for later usage
                 obj.axesList.zlabel{obj.counter.zlabel}=gca;
             end
@@ -431,12 +478,17 @@ classdef iterativeDisplay < handle
 
 
         function yyaxis(obj,varargin)
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             if any(obj.status==obj.instructionStatus.yyaxis) || obj.mode==2
                 yyaxis(varargin{:});
             end
         end
         function varargout=title(obj,varargin)
-            if obj.status==1
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            elseif obj.status==1
                 % Save current axis for later usage
                 obj.axesList.title{obj.counter.title}=gca;
             end
@@ -455,7 +507,9 @@ classdef iterativeDisplay < handle
         end
 
         function varargout=sgtitle(obj,varargin)
-            if obj.status==1
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            elseif obj.status==1
                 % Save current axis for later usage
                 obj.figures.sgtitle{obj.counter.sgtitle}=gcf;
             end
@@ -474,7 +528,9 @@ classdef iterativeDisplay < handle
         end
 
         function varargout=legend(obj,varargin)
-            if obj.status==1
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            elseif obj.status==1
                 % Save current axis for later usage
                 obj.axesList.legend{obj.counter.legend}=gca;
             end
@@ -499,6 +555,9 @@ classdef iterativeDisplay < handle
         end % legend
 
         function varargout=surf(obj,varargin)
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             if any(obj.status==obj.instructionStatus.surf) || obj.mode==2
                 varargin=fixEmptyVarargin3D(varargin{:});
                 obj.handles.surf{obj.counter.surf}=surf(varargin{:});
@@ -535,6 +594,9 @@ classdef iterativeDisplay < handle
             obj.counter.surf=obj.counter.surf+1;
         end %surf
         function varargout=mesh(obj,varargin)
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             if any(obj.status==obj.instructionStatus.mesh) || obj.mode==2
                 varargin=fixEmptyVarargin3D(varargin{:});
                 obj.handles.mesh{obj.counter.mesh}=mesh(varargin{:});
@@ -575,6 +637,9 @@ classdef iterativeDisplay < handle
             % This function semilogx the data. It is restricted to a single semilogx
             % at a time
             % Cf. Matlab semilogx data
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             if any(obj.status==obj.instructionStatus.semilogx) || obj.mode==2
                 % semilogx & stores handles
                 varargin=fixEmptyVarargin2D(varargin{:});
@@ -606,6 +671,9 @@ classdef iterativeDisplay < handle
             % This function semilogy the data. It is restricted to a single semilogy
             % at a time
             % Cf. Matlab semilogy data
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             if any(obj.status==obj.instructionStatus.semilogy) || obj.mode==2
                 % semilogy & stores handles
                 varargin=fixEmptyVarargin2D(varargin{:});
@@ -634,8 +702,9 @@ classdef iterativeDisplay < handle
             obj.counter.semilogy=obj.counter.semilogy+1;
         end % semilogy
         function varargout=xlim(obj,varargin)
-
-            if obj.status==1
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            elseif obj.status==1
                 % Save current axis for later usage
                 obj.axesList.xlim{obj.counter.xlim}=gca;
             end
@@ -659,8 +728,9 @@ classdef iterativeDisplay < handle
         end % Xlim
 
         function varargout=ylim(obj,varargin)
-
-            if obj.status==1
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            elseif obj.status==1
                 % Save current axis for later usage
                 obj.axesList.ylim{obj.counter.ylim}=gca;
             end
@@ -686,8 +756,9 @@ classdef iterativeDisplay < handle
         end % ylim
 
         function varargout=zlim(obj,varargin)
-
-            if obj.status==1
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            elseif obj.status==1
                 % Save current axis for later usage
                 obj.axesList.zlim{obj.counter.zlim}=gca;
             end
@@ -713,6 +784,9 @@ classdef iterativeDisplay < handle
         end % zlim
 
         function box(obj,varargin)
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
             if any(obj.status==obj.instructionStatus.box) || obj.mode==2
                 % User is querying the limits
                 box(varargin{:});
