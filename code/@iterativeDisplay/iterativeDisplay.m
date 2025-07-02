@@ -59,7 +59,7 @@ classdef iterativeDisplay < handle
             end
 
 
-            list={'plot','plot3','semilogx','semilogy','loglog','surf','mesh','imshow'};
+            list={'plot','plot3','semilogx','semilogy','loglog','surf','mesh','imshow','patch'};
             for i=1:length(list)
                 obj.instructionStatus.(list{i})=[-1 1];
                 obj.counter.(list{i})=1;
@@ -306,6 +306,52 @@ classdef iterativeDisplay < handle
             % This plot has been processed, plot next
             obj.counter.plot=obj.counter.plot+1;
         end % Plot
+
+        function varargout=patch(obj,varargin)
+            % This function display a patch the data. 
+            % at a time. Two syntaxes are supported :patch(X,Y,C) and
+            % patch(X,Y,C,Z)
+            
+            % Cf. Matlab patch data
+            if obj.status==-1
+                error('You must call "newIteration" before trying to use the iterativeDisplay object');
+            end
+            if any(obj.status==obj.instructionStatus.plot) || obj.mode==2
+                % Create the patch & stores handles
+                handle=patch(varargin{:});
+                if any(size(handle)~=[1 1])
+                    error('You can only plot one patch at a time');
+                end
+                obj.handles.patch{obj.counter.patch}=handle;
+            else
+                if nargin==4  % (NB 3 parameters => nargin=4 due to obj passed first)
+                    % Only update X,Y,C
+                    obj.handles.patch{obj.counter.patch}.XData=varargin{1};
+                    obj.handles.patch{obj.counter.patch}.YData=varargin{2};
+                    if isnumeric(varargin{3})
+                        obj.handles.patch{obj.counter.patch}.CData=varargin{3};
+                    else
+                        obj.handles.patch{obj.counter.patch}.FaceColor=varargin{3};
+                    end
+                else
+                    % Update x & y data
+                    obj.handles.patch{obj.counter.patch}.XData=varargin{1};
+                    obj.handles.patch{obj.counter.patch}.YData=varargin{2};
+                    obj.handles.patch{obj.counter.patch}.ZData=varargin{3};
+                    if isnumeric(varargin{4})
+                        obj.handles.patch{obj.counter.patch}.CData=varargin{4};
+                    else
+                        obj.handles.patch{obj.counter.patch}.FaceColor=varargin{4};
+                    end
+                end
+            end
+            if nargout>0
+                varargout={obj.handles.patch{obj.counter.patch}};
+            end
+            % This plot has been processed, plot next
+            obj.counter.patch=obj.counter.patch+1;
+        end % Patch
+
 
         function varargout=loglog(obj,varargin)
             % This function loglog the data. It is restricted to a single loglog

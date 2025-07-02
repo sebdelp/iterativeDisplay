@@ -8,24 +8,24 @@
    <demosection>
       <label>example</label>
       <demoitem>
-         <label>optimization_desactivation</label>
+         <label>Optimization desactivation</label>
          <type>other</type>
          <source>optimization_desactivation</source>
       </demoitem>
       <demoitem>
-         <label>setting_properties</label>
+         <label>Setting object properties</label>
          <type>other</type>
          <source>setting_properties</source>
          <file>example/html/setting_properties.html</file>
       </demoitem>
       <demoitem>
-         <label>simple_example</label>
+         <label>Simple example</label>
          <type>other</type>
          <source>simple_example</source>
          <file>example/html/simple_example.html</file>
       </demoitem>
       <demoitem>
-         <label>skipping_function_call</label>
+         <label>Skipping graphic function calls within the main loop</label>
          <type>other</type>
          <source>skipping_function_call</source>
          <file>example/html/skipping_function_call.html</file>

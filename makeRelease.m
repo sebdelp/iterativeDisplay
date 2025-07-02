@@ -19,7 +19,7 @@ clc
 CurrentDirectory=pwd;
 
 toolboxName='Iterative Display';
-toolboxVersion='0.1.9';
+toolboxVersion='0.1.10';
 
 % Source Folders
 codeSrcFolder=fullfile(CurrentDirectory,'code');
